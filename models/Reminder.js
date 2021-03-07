@@ -1,5 +1,8 @@
 const mongoose = require('mongoose')
 
+/** TODO - would be better to implement separate day/month/year elements
+ * to reduce selected reminders from db by selected current month reminders
+ */
 const ReminderSchema = mongoose.Schema({
   title: {
     type: String,
@@ -9,14 +12,21 @@ const ReminderSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  time: {
-    type: Date,
+  date: {
+    type: String,
     required: true,
-    default: Date.now
+  },
+  time: {
+    type: String,
+    required: true,
   },
   trigger: {
-      type: Number,
-      default: 0
+    type: Number,
+    default: false,
+  },
+  userEmail: {
+    type: String,
+    required: true,
   },
 })
 

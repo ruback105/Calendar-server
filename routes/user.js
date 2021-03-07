@@ -1,7 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const UserModel = require('../models/User')
-const { generateHash, checkPassword, generateToken } = require('../services/user')
+const {
+  generateHash,
+  checkPassword,
+  generateToken,
+} = require('../services/user')
 const {
   validateEmail,
   validatePassword,
@@ -9,27 +13,6 @@ const {
 } = require('../services/validator')
 const { check } = require('express-validator')
 const { body, validationResult } = require('express-validator')
-
-//Get all users
-router.get('/', async (req, res) => {
-  console.log('test')
-  try {
-    const users = await UserModel.find()
-    res.json(users)
-  } catch (err) {
-    res.json({ message: err })
-  }
-})
-
-// Get user by email
-router.get('/:id', async (req, res) => {
-  try {
-    const user = await UserModel.findById(req.params.id)
-    res.json(user)
-  } catch (err) {
-    res.json({ message: err })
-  }
-})
 
 //Set user
 router.post(
@@ -78,7 +61,18 @@ router.post(
 router.post(
   '/login',
   check('loginEmail').isEmail().withMessage('Invalid email format'),
+  check('loginPassword')
+    .isLength({ min: 8, max: 16 })
+    .withMessage('Password must be between 8 to 16 characters'),
   async (req, res) => {
+    const errors = validationResult(req)
+
+    // TODO - remove values from error list - security issue
+    if (!errors.isEmpty()) {
+      console.log(errors)
+      return res.status(400).json({ errors: errors.array() })
+    }
+
     try {
       const user = await UserModel.findOne({ email: req.body.loginEmail })
 
@@ -92,18 +86,19 @@ router.post(
         if (token.message) {
           return res.status(500).json({
             errors: [
-            {
-              msg: 'Internal server error',
-              param: 'loginPassword',
-            },
-          ],
+              {
+                msg: 'Internal server error',
+                param: 'loginPassword',
+              },
+            ],
           })
         }
         return res.status(200).json({
           email: req.body.loginEmail,
-          token: token
+          token: token,
         })
       } else {
+        console.log()
         return res.status(400).json({
           errors: [
             {
@@ -114,7 +109,7 @@ router.post(
         })
       }
     } catch (err) {
-      res.json({ message: err })
+      return res.json({ message: err })
     }
   },
 )
