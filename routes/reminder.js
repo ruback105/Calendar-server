@@ -33,7 +33,6 @@ router.post(
     const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
-      console.log(errors)
       return res.status(400).json({ errors: errors.array() })
     }
 
@@ -64,7 +63,6 @@ router.get('/:email', async (req, res) => {
     })
 
     if (reminders) {
-      
       return res.status(200).json(sortByDateTime(reminders))
     }
   } catch (err) {
@@ -74,20 +72,28 @@ router.get('/:email', async (req, res) => {
 
 //Get reminder by user and date
 router.get('/:email/:date', async (req, res) => {
-  console.log(req.params.email)
-  console.log(req.params.date)
   try {
     const reminders = await ReminderModel.find({
       userEmail: req.params.email,
       date: req.params.date,
     })
 
-    console.log(reminders)
     if (reminders) {
       return res.status(200).json(reminders)
     }
   } catch (err) {
     throw new Error(err)
+  }
+})
+
+router.delete('/:_id', async (req, res) => {
+  try {
+    const removedReminder = await ReminderModel.deleteOne({
+      _id: req.params._id,
+    })
+    res.json(removedReminder)
+  } catch (err) {
+    res.json({ message: err })
   }
 })
 

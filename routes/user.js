@@ -26,7 +26,6 @@ router.post(
 
     // TODO - remove values from error list - security issue
     if (!errors.isEmpty()) {
-      console.log(errors)
       return res.status(400).json({ errors: errors.array() })
     }
 
@@ -69,7 +68,6 @@ router.post(
 
     // TODO - remove values from error list - security issue
     if (!errors.isEmpty()) {
-      console.log(errors)
       return res.status(400).json({ errors: errors.array() })
     }
 
@@ -98,7 +96,6 @@ router.post(
           token: token,
         })
       } else {
-        console.log()
         return res.status(400).json({
           errors: [
             {
